@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nlw5_app/home/widgets/appbar/app_bar_widget.dart';
 import 'package:nlw5_app/home/widgets/level_button/level_button_widget.dart';
+import 'package:nlw5_app/home/widgets/quiz_card/quiz_card_widget.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -16,21 +17,44 @@ class _HomePageState extends State<HomePage> {
         appBar: AppBarWidget(),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Column(
             children: [
-              LevelButtonWidget(
-                label: "Fácil",
+              SizedBox(
+                height: 24,
               ),
-              LevelButtonWidget(
-                label: "Médio",
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  LevelButtonWidget(
+                    label: "Fácil",
+                  ),
+                  LevelButtonWidget(
+                    label: "Médio",
+                  ),
+                  LevelButtonWidget(
+                    label: "Difícil",
+                  ),
+                  LevelButtonWidget(
+                    label: "Perito",
+                  ),
+                ],
               ),
-              LevelButtonWidget(
-                label: "Difícil",
+              SizedBox(
+                height: 24,
               ),
-              LevelButtonWidget(
-                label: "Perito",
-              ),
+              Expanded(
+                child: GridView.count(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  children: [
+                    QuizCardWidget(),
+                    QuizCardWidget(),
+                    QuizCardWidget(),
+                    QuizCardWidget(),
+                  ],
+                ),
+              )
             ],
           ),
         ));
