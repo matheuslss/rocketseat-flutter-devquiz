@@ -7,9 +7,10 @@ import 'package:nlw5_app/shared/models/question_model.dart';
 
 class ChallengePage extends StatefulWidget {
   final List<QuestionModel> questions;
-  final String title;
-  ChallengePage({Key? key, required this.questions, this.title = ""})
-      : super(key: key);
+  ChallengePage({
+    Key? key,
+    required this.questions,
+  }) : super(key: key);
 
   @override
   _ChallengePageState createState() => _ChallengePageState();
@@ -34,6 +35,20 @@ class _ChallengePageState extends State<ChallengePage> {
       );
   }
 
+  void previousPage() {
+    if (controller.currentPage > 1)
+      pageController.previousPage(
+        duration: Duration(milliseconds: 100),
+        curve: Curves.linear,
+      );
+  }
+
+  void pagination() {
+    if (controller.currentPage == 1) Navigator.pop(context);
+
+    if (controller.currentPage > 1) previousPage();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,23 +56,22 @@ class _ChallengePageState extends State<ChallengePage> {
         preferredSize: Size.fromHeight(86),
         child: SafeArea(
           top: true,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              IconButton(
-                  icon: Icon(Icons.close),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  }),
-              ValueListenableBuilder<int>(
-                valueListenable: controller.currentPageNotifier,
-                builder: (context, value, _) => QuestionIndicatorWidget(
-                  currentPage: value,
-                  length: widget.questions.length,
-                ),
-              )
-            ],
-          ),
+          child: ValueListenableBuilder<int>(
+              valueListenable: controller.currentPageNotifier,
+              builder: (context, value, _) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      IconButton(
+                          onPressed: pagination,
+                          icon: controller.currentPage == 1
+                              ? Icon(Icons.close)
+                              : Icon(Icons.arrow_back)),
+                      QuestionIndicatorWidget(
+                        currentPage: value,
+                        length: widget.questions.length,
+                      ),
+                    ],
+                  )),
         ),
       ),
       body: PageView(
