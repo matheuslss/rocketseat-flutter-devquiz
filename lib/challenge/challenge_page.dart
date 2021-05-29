@@ -33,6 +33,8 @@ class _ChallengePageState extends State<ChallengePage> {
         duration: Duration(milliseconds: 100),
         curve: Curves.linear,
       );
+    if (controller.currentPage == widget.questions.length)
+      Navigator.pop(context);
   }
 
   void previousPage() {
@@ -79,8 +81,9 @@ class _ChallengePageState extends State<ChallengePage> {
         controller: pageController,
         children: widget.questions
             .map(
-              (e) => QuizWidget(
-                question: e,
+              (quiz) => QuizWidget(
+                question: quiz,
+                onChange: nextPage,
                 // onSelected: onSelected,
               ),
             )
@@ -95,15 +98,13 @@ class _ChallengePageState extends State<ChallengePage> {
                 builder: (context, value, _) => Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Expanded(
-                            child: NextButtonWidget.white(
-                                label: "Pular", onTap: nextPage)),
-                        SizedBox(
-                          width: 7,
-                        ),
-                        Expanded(
-                            child: NextButtonWidget.green(
-                                label: "Confirmar", onTap: () {})),
+                        value == widget.questions.length
+                            ? Expanded(
+                                child: NextButtonWidget.green(
+                                    label: "Finalizar", onTap: nextPage))
+                            : Expanded(
+                                child: NextButtonWidget.green(
+                                    label: "Próxima", onTap: nextPage)),
                       ],
                     ))),
       ),
