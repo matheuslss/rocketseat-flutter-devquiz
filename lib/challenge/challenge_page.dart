@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nlw5_app/challenge/challenge_controller.dart';
 import 'package:nlw5_app/challenge/widgets/next_button/next_button_widget.dart';
 import 'package:nlw5_app/challenge/widgets/question_indicator/question_indicator_widget.dart';
 import 'package:nlw5_app/challenge/widgets/quiz/quiz_widget.dart';
@@ -13,8 +14,19 @@ class ChallengePage extends StatefulWidget {
 }
 
 class _ChallengePageState extends State<ChallengePage> {
+  final controller = ChallengeController();
+  final pageController = PageController();
+  @override
+  void initState() {
+    pageController.addListener(() {
+      controller.currentPage = pageController.page!.toInt() + 1;
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    print(pageController.hasClients.toString());
     return Container(
       child: Scaffold(
         appBar: PreferredSize(
@@ -28,12 +40,20 @@ class _ChallengePageState extends State<ChallengePage> {
                     Navigator.pop(context);
                   },
                   icon: Icon(Icons.close)),
-              QuestionIndicatorWidget(),
+              ValueListenableBuilder<int>(
+                  valueListenable: controller.currentPageNotifier,
+                  builder: (context, value, _) => (QuestionIndicatorWidget(
+                        currentPage: value,
+                        length: widget.questions.length,
+                      )))
             ],
           )),
         ),
-        body: QuizWidget(
-          question: widget.questions[0],
+        body: PageView(
+          physics: NeverScrollableScrollPhysics(),
+          children: widget.questions
+              .map((question) => QuizWidget(question: question))
+              .toList(),
         ),
         bottomNavigationBar: SafeArea(
           bottom: true,
@@ -43,8 +63,22 @@ class _ChallengePageState extends State<ChallengePage> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Expanded(
-                    child:
-                        NextButtonWidget.white(label: "Pular", onTap: () {})),
+                    child: NextButtonWidget.white(
+                        label: "Pular",
+                        onTap: () {
+                          print("hasClients - " +
+                              pageController.hasClients.toString());
+                          print("initialPage - " +
+                              pageController.initialPage.toString());
+                          print("currentPage - " +
+                              controller.currentPage.toString());
+                          print("positions - " +
+                              pageController.positions.toString());
+
+                          pageController.nextPage(
+                              duration: Duration(milliseconds: 100),
+                              curve: Curves.linear);
+                        })),
                 SizedBox(
                   width: 7,
                 ),
