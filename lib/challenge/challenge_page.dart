@@ -7,7 +7,9 @@ import 'package:nlw5_app/shared/models/question_model.dart';
 
 class ChallengePage extends StatefulWidget {
   final List<QuestionModel> questions;
-  ChallengePage({Key? key, required this.questions}) : super(key: key);
+  final String title;
+  ChallengePage({Key? key, required this.questions, this.title = ""})
+      : super(key: key);
 
   @override
   _ChallengePageState createState() => _ChallengePageState();
@@ -24,71 +26,72 @@ class _ChallengePageState extends State<ChallengePage> {
     super.initState();
   }
 
+  void nextPage() {
+    if (controller.currentPage < widget.questions.length)
+      pageController.nextPage(
+        duration: Duration(milliseconds: 100),
+        curve: Curves.linear,
+      );
+  }
+
   @override
   Widget build(BuildContext context) {
-    print(pageController.hasClients.toString());
-    return Container(
-      child: Scaffold(
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(84),
-          child: SafeArea(
-              child: Column(
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(86),
+        child: SafeArea(
+          top: true,
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               IconButton(
+                  icon: Icon(Icons.close),
                   onPressed: () {
                     Navigator.pop(context);
-                  },
-                  icon: Icon(Icons.close)),
+                  }),
               ValueListenableBuilder<int>(
-                  valueListenable: controller.currentPageNotifier,
-                  builder: (context, value, _) => (QuestionIndicatorWidget(
-                        currentPage: value,
-                        length: widget.questions.length,
-                      )))
-            ],
-          )),
-        ),
-        body: PageView(
-          physics: NeverScrollableScrollPhysics(),
-          children: widget.questions
-              .map((question) => QuizWidget(question: question))
-              .toList(),
-        ),
-        bottomNavigationBar: SafeArea(
-          bottom: true,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Expanded(
-                    child: NextButtonWidget.white(
-                        label: "Pular",
-                        onTap: () {
-                          print("hasClients - " +
-                              pageController.hasClients.toString());
-                          print("initialPage - " +
-                              pageController.initialPage.toString());
-                          print("currentPage - " +
-                              controller.currentPage.toString());
-                          print("positions - " +
-                              pageController.positions.toString());
-
-                          pageController.nextPage(
-                              duration: Duration(milliseconds: 100),
-                              curve: Curves.linear);
-                        })),
-                SizedBox(
-                  width: 7,
+                valueListenable: controller.currentPageNotifier,
+                builder: (context, value, _) => QuestionIndicatorWidget(
+                  currentPage: value,
+                  length: widget.questions.length,
                 ),
-                Expanded(
-                    child: NextButtonWidget.green(
-                        label: "Confirmar", onTap: () {})),
-              ],
-            ),
+              )
+            ],
           ),
         ),
+      ),
+      body: PageView(
+        physics: NeverScrollableScrollPhysics(),
+        controller: pageController,
+        children: widget.questions
+            .map(
+              (e) => QuizWidget(
+                question: e,
+                // onSelected: onSelected,
+              ),
+            )
+            .toList(),
+      ),
+      bottomNavigationBar: SafeArea(
+        bottom: true,
+        child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: ValueListenableBuilder<int>(
+                valueListenable: controller.currentPageNotifier,
+                builder: (context, value, _) => Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Expanded(
+                            child: NextButtonWidget.white(
+                                label: "Pular", onTap: nextPage)),
+                        SizedBox(
+                          width: 7,
+                        ),
+                        Expanded(
+                            child: NextButtonWidget.green(
+                                label: "Confirmar", onTap: () {})),
+                      ],
+                    ))),
       ),
     );
   }
