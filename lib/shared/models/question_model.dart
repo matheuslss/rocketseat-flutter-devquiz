@@ -4,23 +4,23 @@ import 'package:nlw5_app/shared/models/awnser_model.dart';
 
 class QuestionModel {
   final String title;
-  final List<AwnserModel> awnsers;
+  final List<AnswerModel> answers;
 
-  QuestionModel({required this.title, required this.awnsers})
-      : assert(awnsers.length == 4);
+  QuestionModel({required this.title, required this.answers})
+      : assert(answers.length == 4);
 
   Map<String, dynamic> toMap() {
     return {
       'title': title,
-      'awnsers': awnsers.map((x) => x.toMap()).toList(),
+      'answers': answers.map((x) => x.toMap()).toList(),
     };
   }
 
   factory QuestionModel.fromMap(Map<String, dynamic> map) {
     return QuestionModel(
       title: map['title'],
-      awnsers: List<AwnserModel>.from(
-          map['awnsers']?.map((x) => AwnserModel.fromMap(x))),
+      answers: List<AnswerModel>.from(
+          map['answers']?.map((x) => AnswerModel.fromMap(x))),
     );
   }
 
