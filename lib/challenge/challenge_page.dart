@@ -3,13 +3,16 @@ import 'package:nlw5_app/challenge/challenge_controller.dart';
 import 'package:nlw5_app/challenge/widgets/next_button/next_button_widget.dart';
 import 'package:nlw5_app/challenge/widgets/question_indicator/question_indicator_widget.dart';
 import 'package:nlw5_app/challenge/widgets/quiz/quiz_widget.dart';
+import 'package:nlw5_app/result/result_page.dart';
 import 'package:nlw5_app/shared/models/question_model.dart';
 
 class ChallengePage extends StatefulWidget {
   final List<QuestionModel> questions;
+  final String title;
   ChallengePage({
     Key? key,
     required this.questions,
+    required this.title,
   }) : super(key: key);
 
   @override
@@ -34,7 +37,14 @@ class _ChallengePageState extends State<ChallengePage> {
         curve: Curves.linear,
       );
     if (controller.currentPage == widget.questions.length)
-      Navigator.pop(context);
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ResultPage(
+                    title: widget.title,
+                    length: widget.questions.length,
+                    correctAnwsers: controller.correctAnwsers,
+                  )));
   }
 
   void previousPage() {
@@ -49,6 +59,11 @@ class _ChallengePageState extends State<ChallengePage> {
     if (controller.currentPage == 1) Navigator.pop(context);
 
     if (controller.currentPage > 1) previousPage();
+  }
+
+  void onSelected(bool value) {
+    if (value) controller.correctAnwsers++;
+    nextPage();
   }
 
   @override
@@ -83,7 +98,7 @@ class _ChallengePageState extends State<ChallengePage> {
             .map(
               (quiz) => QuizWidget(
                 question: quiz,
-                onChange: nextPage,
+                onSelected: onSelected,
                 // onSelected: onSelected,
               ),
             )
